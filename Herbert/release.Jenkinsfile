@@ -17,7 +17,7 @@ properties([
   ])
 ])
 
-def base_job_name = "${BASE_JOB_NAME}".trim().replace("Release-", "")
+def base_job_name = "${JOB_BASE_NAME}".trim().replace("Release-", "")
 
 // Run the Branch-* pipeline to generate release
 def handle = build(
