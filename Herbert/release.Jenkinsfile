@@ -5,7 +5,7 @@ properties([
   [
     $class: 'GithubProjectProperty',
     displayName: '',
-    projectUrlStr: 'https://github.com/pace-neutrons/Horace/'
+    projectUrlStr: 'https://github.com/pace-neutrons/Herbert/'
   ],
   parameters([
     string(
