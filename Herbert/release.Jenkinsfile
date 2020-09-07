@@ -46,17 +46,18 @@ def run_build(String pipeline_name) {
     propagate: true
   )
 
+  def artifact_filter = ""
   if (isUnix()) {
-    def artifact_filter = "*.tar.gz"
+    artifact_filter = "*.tar.gz"
   } else {
-    def artifact_filter = "*.zip"
+    artifact_filter = "*.zip"
   }
 
   copyArtifacts(
     excludes: '*.xml',
-    filter: "${artifact_filter}",
+    filter: artifact_filter,
     fingerprintArtifacts: true,
-    projectName: "${handle.fullProjectName}",
+    projectName: handle.fullProjectName,
     selector: specific("${handle.number}"),
     target: '.'
   )
@@ -112,5 +113,23 @@ pipeline {
 
       } // matrix
     } // stage
+
+
+    stage('Archive-Packages') {
+      steps {
+        archiveArtifacts(
+          artifacts: '*.zip, *.tar.gz',
+          fingerprint: true
+        )
+      }
+    }
+
   } // stages
+
+  post {
+    cleanup {
+      deleteDir()
+    }
+  }
+
 } //pipeline
