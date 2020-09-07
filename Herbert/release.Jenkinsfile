@@ -45,10 +45,25 @@ def run_build(String pipeline_name) {
     ],
     propagate: true
   )
+
+  if (isUnix()) {
+    def artifact_filter = "*.tar.gz"
+  } else {
+    def artifact_filter = "*.zip"
+  }
+
+  copyArtifacts(
+    excludes: '*.xml',
+    filter: "${artifact_filter}",
+    fingerprintArtifacts: true,
+    projectName: "${handle.fullProjectName}",
+    selector: specific("${handle.number}"),
+    target: '.'
+  )
 }
 
 pipeline {
-  agent none
+  agent any
 
   stages {
 
@@ -86,6 +101,7 @@ pipeline {
                 values '2018b', '2019b'
             }
         }
+
         stages {
           stage('Trigger-Branch') {
             steps {
@@ -93,7 +109,8 @@ pipeline {
             }
           }
         }
-      }
-    }
-  }
-}
+
+      } // matrix
+    } // stage
+  } // stages
+} //pipeline
