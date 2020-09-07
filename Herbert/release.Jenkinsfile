@@ -48,7 +48,7 @@ def run_build(String pipeline_name) {
 }
 
 pipeline {
-  agent any
+  agent none
 
   stages {
 
