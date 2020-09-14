@@ -10,8 +10,12 @@ def release_id_description = (
   "  <JOB_NAME> <BUILD_NUMBER>\n" +
   "  ...")
 
-withCredentials([string(credentialsId: 'win10_agent', variable: 'agent')]) {
-  def agent_label = "${agent}"
+def get_agent() {
+  def agent_label = ''
+  withCredentials([string(credentialsId: 'win10_agent', variable: 'agent')]) {
+    agent_label = "${agent}"
+  }
+  return agent_label
 }
 
 properties([
@@ -47,7 +51,7 @@ properties([
 
 
 pipeline {
-  agent { label: agent_label }
+  agent { label get_agent() }
 
   stages {
     stage('Get-Artifacts') {
