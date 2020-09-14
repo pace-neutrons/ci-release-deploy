@@ -59,12 +59,14 @@ pipeline {
     stage('Push-Release') {
       steps {
         // Create GitHub tags and push artifacts
+        echo 'Push-Release'
       }
     }
 
     stage('Validate-Release') {
       steps {
         // Validate that the tags are on GitHub along with the assets
+        echo 'Validate-Release'
       }
     }
   }
