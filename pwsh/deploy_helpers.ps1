@@ -10,7 +10,7 @@
 #>
 function create_release_tag {
   param(
-    # The token to provide authentication to GitHub
+    # An API token that provides authentication to GitHub
     [string]$auth_token,
     # The SHA of the commit to create the tag and release on
     [string]$git_sha,
@@ -20,10 +20,10 @@ function create_release_tag {
     [string]$release_name,
     # The name of the repository to create the release on
     [string]$repo_name,
+    # The owner (username/organisation) of the repository to create the release on
+    [string]$repo_owner,
     # The name to give the created tag
     [string]$tag_name,
-    # The owner (username/organisation) of the repository containing the release
-    [string]$repo_owner,
     # Mark this release as a draft release - do not publish it
     [switch]$draft,
     # Mark this release as a pre-release
@@ -70,17 +70,17 @@ function upload_release_asset() {
   param(
     # The path to the file to be uploaded
     [string]$asset_path,
-    # The type of file that is being upload (e.g. zip)
+    # The type of file that is being uploaded (e.g. zip)
     [string]$asset_type,
-    # The token to provide authentication to GitHub
+    # An API token that provides authentication to GitHub
     [string]$auth_token,
     # The release ID number
     [string]$release_id,
-    # The desired name of the file/asset shown on GitHub
+    # The name to give the file/asset on GitHub
     [string]$asset_name,
-    # The name of the repository holding the release
+    # The name of the repository to create the release on
     [string]$repo_name,
-    # The owner (username/organisation) of the repository containing the release
+    # The owner (username/organisation) of the repository to create the release on
     [string]$repo_owner
   )
 
