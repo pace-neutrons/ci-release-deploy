@@ -52,7 +52,22 @@ pipeline {
   stages {
     stage('Get-Artifacts') {
       steps {
-        // Copy artifacts from relevant Release-* builds
+        script {
+          List lines = env.release_job_ids.split('\n')
+          for (String line : lines) {
+            List build = line.split(' ')
+            String project_name = build[0]
+            String build_num = build[1]
+            echo "project_name: ${project_name}\nbuild_num: ${build_num}"
+
+            copyArtifacts(
+              filter: 'Herbert-*',
+              fingerprintArtifacts: true,
+              projectName: "${project_name}",
+              selector: specific("${build_num}")
+            )
+          }
+        }
       }
     }
 
