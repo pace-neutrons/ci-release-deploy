@@ -55,7 +55,6 @@ $tag_opts = @{
 
 Write-Output "Creating release $ReleaseName on $GitSHA in $RepoOwner/$RepoName..."
 $result = New-GitHubRelease @tag_opts
-Write-Output "Release $ReleaseName created succesfully.`n"
 
 foreach ($AssetPath in $AssetPaths) {
 
@@ -71,5 +70,6 @@ foreach ($AssetPath in $AssetPaths) {
 
   Write-Output "Uploading asset $AssetPath..."
   Publish-ReleaseAsset @asset_opts | Out-Null
-  Write-Output "Asset $AssetPath uploaded.`n"
 }
+
+Write-Output "Release $ReleaseName created succesfully.`n"
