@@ -33,6 +33,11 @@ param(
   Get-ApplicationType #>
 . $PSScriptRoot\Helpers.ps1
 
+if ($AssetPaths.Length -eq 0) {
+  Write-Error("No paths passed to AssetPaths parameter.")
+  exit 1
+}
+
 foreach ($AssetPath in $AssetPaths) {
   if (!(Test-Path $AssetPath)) {
     Write-Error("Cannot upload asset. File '$AssetPath' does not exist.`n" +
