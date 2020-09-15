@@ -110,4 +110,10 @@ pipeline {
       }
     }
   }
+
+  post {
+    cleanup {
+      deleteDir()
+    }
+  }
 }
