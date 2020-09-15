@@ -1,3 +1,5 @@
+$BASE_RELEASES_URL = "https://{0}.github.com/repos/{1}/{2}/releases"
+
 <#
 .SYNOPSIS
   This function is used to tag a commit and create a release on GitHub.
@@ -24,7 +26,7 @@ function New-GitHubRelease {
     [bool]$PreRelease
   )
 
-  $releases_url = "https://api.github.com/repos/$RepoOwner/$RepoName/releases"
+  $releases_url = $BASE_RELEASES_URL -f @("api", $RepoOwner, $RepoName)
   $payload = @{
     tag_name = "$TagName"
     target_commitish = "$GitSHA"
@@ -73,9 +75,8 @@ function Publish-ReleaseAsset() {
     [string]$RepoOwner
   )
 
-  $upload_url = "https://uploads.github.com/repos/{0}/{1}/releases/{2}/assets"
-  $upload_url = $upload_url -f @("$RepoOwner", "$RepoName", "$ReleaseID")
-  $full_upload_url = "${upload_url}?name=${AssetName}"
+  $upload_url = $BASE_RELEASES_URL -f @("uploads", "$RepoOwner", "$RepoName")
+  $full_upload_url = "${upload_url}/${ReleaseID}/?name=${AssetName}"
 
   [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
   try {
