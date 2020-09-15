@@ -1,8 +1,6 @@
 #!groovy
 
 def repo_owner = "pace-neutrons"
-def repo_name = "Herbert"
-
 def release_id_description = (
   "The IDs of the jobs that contain the target release artifacts.\n" +
   "This parameter should have the form:\n\n" +
@@ -16,6 +14,15 @@ def get_agent() {
     agent_label = "${agent}"
   }
   return agent_label
+}
+
+def get_repo_name(String job_name) {
+  if (job_name.contains('Herbert/')) {
+    return 'Herbert'
+  } else if (job_name.contains('Horace/')) {
+    return 'Horace'
+  }
+  return ''
 }
 
 properties([
@@ -51,6 +58,11 @@ properties([
       defaultValue: false,
       description: 'Tick if this release should be marked as a draft on GitHub.',
       name: 'is_draft'
+    ),
+    string(
+      defaultValue: get_repo_name(env.JOB_NAME),
+      description: 'The name of the repository to create the release in.',
+      name: 'repo_name'
     )
   ])
 ])
