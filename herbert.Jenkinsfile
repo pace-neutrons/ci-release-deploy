@@ -107,12 +107,5 @@ pipeline {
         }
       }
     }
-
-    stage('Validate-Release') {
-      steps {
-        // Validate that the tags are on GitHub along with the assets
-        echo 'Validate-Release'
-      }
-    }
   }
 }
