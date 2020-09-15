@@ -102,7 +102,9 @@ pipeline {
                 -ReleaseBody "${release_body}" \
                 -ReleaseName "v${version_number}" \
                 -RepoName ${repo_name} \
-                -RepoOwner ${repo_owner}
+                -RepoOwner ${repo_owner} \
+                -Draft \$${is_draft} \
+                -PreRelease \$${is_prerelease}
           """
         }
       }

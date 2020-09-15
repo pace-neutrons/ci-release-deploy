@@ -22,9 +22,9 @@ param(
   # The owner (username/organisation) of the repository containing the release
   [string]$RepoOwner,
   # Mark this release as a Draft release - do not publish it
-  [switch]$Draft,
+  [bool]$Draft,
   # Mark this release as a pre-release
-  [switch]$PreRelease
+  [bool]$PreRelease
 )
 
 <# Import:
