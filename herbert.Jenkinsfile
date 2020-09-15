@@ -71,7 +71,7 @@ pipeline {
 
             echo "Copying artifact from build #${build_num} of ${project_name}"
             copyArtifacts(
-              filter: 'Herbert-*',
+              filter: "**/${repo_name}-*",
               fingerprintArtifacts: true,
               projectName: "${project_name}",
               selector: specific("${build_num}")
