@@ -65,7 +65,7 @@ function Publish-ReleaseAsset() {
     [string]$AssetType,
     # An API token that provides authentication to GitHub
     [string]$AuthToken,
-    # The release ID number
+    # The ID number of the release to publish the asset to
     [string]$ReleaseID,
     # The name of the repository to create the release on
     [string]$RepoName,
@@ -108,6 +108,31 @@ function Get-ApplicationType() {
       Write-Error "Invalid extension type. Extension must be .zip or .gz.
                    Found '$((Get-ChildItem $FilePath).Extension)'"
       exit 2
+    }
+  }
+}
+
+<#
+.SYNOPSIS
+  Function to test whether the given release file names are releases that
+  correspond to the given version number.
+#>
+function Test-VersionNumbers() {
+  param( [string]$VersionNumber, [string[]]$ReleaseFileNames )
+
+  foreach ($release in $ReleaseFileName) {
+    $match = $ReleaseFireleaseleName -Match "-([0-9]+\.[0-9]+\.[0-9]+)-"
+    if (!$match) {
+      Write-Error "Could not locate version string in release name: $release."
+      exit 1
+    }
+
+    $found_version = $Matches.1
+    if ($found_version -ne $VersionNumber) {
+      Write-Error("Given version number does not match found version " +
+                  "number.`nFound '$found_version' in $ReleaseFileName, " +
+                  "required version is '$VersionNumber'.")
+      exit 1
     }
   }
 }

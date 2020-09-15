@@ -87,27 +87,22 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell """
-            \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
-            foreach (\$artifact in \$artifacts) {
-              \$artifact -Match "-([0-9]+\\.[0-9]+\\.[0-9]+)-"
-              \$version_str = \$Matches.0
+            . ./pwsh/Helpers.ps1
 
-              if (\$version_str -ne ${version_number}) {
-                Write-Error ("The 'version_number' parameter does not match " + `
-                            "the version in the copied artifact.`n" +
-                            "Found ${version_number} & \$version_str.")
-                exit 1
-              }
-            }
+            \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
+
+            Test-VersionNumbers \
+                -VersionNumber ${version_number} \
+                -ReleaseFileNames \$artifacts
 
             ./pwsh/Deploy-ToGitHub \
-              -AssetPaths \$artifacts \
-              -AuthToken ${api_token} \
-              -GitSHA ${tag_sha} \
-              -ReleaseBody "${release_body}" \
-              -ReleaseName "v${version_number}" \
-              -RepoName ${repo_name} \
-              -RepoOwner ${repo_owner}
+                -AssetPaths \$artifacts \
+                -AuthToken ${api_token} \
+                -GitSHA ${tag_sha} \
+                -ReleaseBody "${release_body}" \
+                -ReleaseName "v${version_number}" \
+                -RepoName ${repo_name} \
+                -RepoOwner ${repo_owner}
           """
         }
       }
