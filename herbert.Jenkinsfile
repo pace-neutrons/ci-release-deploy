@@ -73,6 +73,7 @@ pipeline {
             copyArtifacts(
               filter: "**/${repo_name}-*",
               fingerprintArtifacts: true,
+              flatten: true,
               projectName: "${project_name}",
               selector: specific("${build_num}"),
               target: '.'
@@ -89,7 +90,7 @@ pipeline {
           powershell """
             . ./pwsh/Helpers.ps1
 
-            \$artifacts = (Get-ChildItem -Recurse -Filter ${repo_name}-*).Name
+            \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
 
             Test-VersionNumbers \
                 -VersionNumber ${version_number} \
