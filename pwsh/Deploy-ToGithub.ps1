@@ -33,6 +33,14 @@ param(
   Get-ApplicationType #>
 . $PSScriptRoot\Helpers.ps1
 
+foreach ($AssetPath in $AssetPaths) {
+  if (!(Test-Path $AssetPath)) {
+    Write-Error("Cannot upload asset. File '$AssetPath' does not exist.`n" +
+                "Release not created.")
+    exit 1
+  }
+}
+
 $tag_opts = @{
   "AuthToken" = "$AuthToken"
   "Draft" = $Draft
@@ -50,11 +58,6 @@ $result = New-GitHubRelease @tag_opts
 Write-Output "Release $ReleaseName created succesfully.`n"
 
 foreach ($AssetPath in $AssetPaths) {
-
-  if (!(Test-Path $AssetPath)) {
-    Write-Error "Cannot upload asset. File '$AssetPath' does not exist."
-    exit 1
-  }
 
   $asset_opts = @{
     "AssetName" = (Get-ChildItem $AssetPath).Name
