@@ -26,6 +26,12 @@ properties([
       name: 'tag_sha',
       trim: true
     ),
+    string(
+      defaultValue: '',
+      description: 'The version of this release (e.g. 3.4.1)',
+      name: 'version_number',
+      trim: true
+    ),
     text(
       defaultValue: '',
       description: release_id_description,
@@ -62,13 +68,14 @@ pipeline {
             List build = line.split(' ')
             String project_name = build[0]
             String build_num = build[1]
-            echo "project_name: ${project_name}\nbuild_num: ${build_num}"
 
+            echo "Copying artifact from build #${build_num} of ${project_name}"
             copyArtifacts(
               filter: 'Herbert-*',
               fingerprintArtifacts: true,
               projectName: "${project_name}",
               selector: specific("${build_num}")
+              target: '.'
             )
           }
         }
@@ -77,8 +84,32 @@ pipeline {
 
     stage('Push-Release') {
       steps {
-        // Create GitHub tags and push artifacts
-        echo 'Push-Release'
+        withCredentials([string(credentialsId: 'GitHub_API_Token',
+                                variable: 'api_token')]) {
+          powershell """
+            \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
+            foreach (\$artifact in \$artifacts) {
+              \$artifact -Match "-([0-9]+\\.[0-9]+\\.[0-9]+)-"
+              \$version_str = \$Matches.0
+
+              if (\$version_str -ne ${version_number}) {
+                Write-Error ("The 'version_number' parameter does not match " + `
+                            "the version in the copied artifact.`n" +
+                            "Found ${version_number} & \$version_str.")
+                exit 1
+              }
+            }
+
+            ./pwsh/Deploy-ToGitHub \
+              -AssetPaths \$artifacts \
+              -AuthToken ${api_token} \
+              -GitSHA ${tag_sha} \
+              -ReleaseBody "${release_body}" \
+              -ReleaseName "v${version_number}" \
+              -RepoName ${repo_name} \
+              -RepoOwner ${repo_owner}
+          """
+        }
       }
     }
 
