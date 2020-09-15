@@ -74,8 +74,7 @@ pipeline {
               filter: 'Herbert-*',
               fingerprintArtifacts: true,
               projectName: "${project_name}",
-              selector: specific("${build_num}"),
-              target: '.'
+              selector: specific("${build_num}")
             )
           }
         }
