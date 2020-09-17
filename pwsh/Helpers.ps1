@@ -96,7 +96,7 @@ function Publish-ReleaseAsset() {
 
 <#
 .SYNOPSIS
-  Function to deduce the content type of the given file. Only .zip and .tar.gz
+  Function to deduce the application type of the given file. Only .zip and .gz
   files are currently supported.
 #>
 function Get-ApplicationType() {
