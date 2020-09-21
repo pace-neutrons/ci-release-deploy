@@ -50,14 +50,14 @@ properties([
       name: 'release_body'
     ),
     booleanParam(
-      defaultValue: false,
-      description: 'Tick if this release should be marked as a pre-release on GitHub.',
-      name: 'is_prerelease'
+      defaultValue: true,
+      description: 'Tick if this release should be marked as a draft on GitHub.',
+      name: 'is_draft'
     ),
     booleanParam(
       defaultValue: false,
-      description: 'Tick if this release should be marked as a draft on GitHub.',
-      name: 'is_draft'
+      description: 'Tick if this release should be marked as a pre-release on GitHub.',
+      name: 'is_prerelease'
     ),
     string(
       defaultValue: get_repo_name(env.JOB_NAME),
