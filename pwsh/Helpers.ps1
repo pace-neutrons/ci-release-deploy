@@ -76,7 +76,7 @@ function Publish-ReleaseAsset() {
   )
 
   $upload_url = $BASE_RELEASES_URL -f @("uploads", "$RepoOwner", "$RepoName")
-  $full_upload_url = "${upload_url}/${ReleaseID}/?name=${AssetName}"
+  $full_upload_url = "${upload_url}/${ReleaseID}/assets?name=${AssetName}"
 
   [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
   try {
