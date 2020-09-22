@@ -46,7 +46,7 @@ properties([
     ),
     text(
       defaultValue: '',
-      description: 'The description of this release to show on GitHub e.g. release notes',
+      description: 'The description of this release to show on GitHub e.g. release notes. This should be formatted as markdown.',
       name: 'release_body'
     ),
     booleanParam(
