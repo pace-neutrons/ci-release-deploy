@@ -1,3 +1,7 @@
+$ALLOWED_ASSET_EXTENSIONS = @{
+  ".zip" = "zip"
+  ".gz" = "gzip"
+}
 $BASE_RELEASES_URL = "https://{0}.github.com/repos/{1}/{2}/releases"
 
 <#
@@ -80,18 +84,18 @@ function Publish-ReleaseAsset() {
 
   [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
   try {
-    $result = Invoke-RestMethod `
-                -URI "$full_upload_url" `
-                -Headers @{Authorization = "token $AuthToken"} `
-                -Method 'POST' `
-                -ContentType "application/$AssetType" `
-                -InFile "$AssetPath"
+    Write-Output "Uploading asset $AssetPath to $full_upload_url..."
+    Invoke-RestMethod `
+      -URI "$full_upload_url" `
+      -Headers @{Authorization = "token $AuthToken"} `
+      -Method 'POST' `
+      -ContentType "application/$AssetType" `
+      -InFile "$AssetPath"
   } catch {
     $_.Exception
     $_.ErrorDetails.Message
     exit 1
   }
-  return $result
 }
 
 <#
@@ -102,15 +106,25 @@ function Publish-ReleaseAsset() {
 function Get-ApplicationType() {
   param( [string]$FilePath )
 
-  switch((Get-ChildItem $FilePath).Extension) {
-    ".zip" { return "zip" }
-    ".gz" { return "gzip" }
-    default {
-      Write-Error "Invalid extension type. Extension must be .zip or .gz.
-                   Found '$((Get-ChildItem $FilePath).Extension)'"
-      exit 2
-    }
+  if (Test-FileExtension $FilePath) {
+    return $ALLOWED_ASSET_EXTENSIONS.((Get-ChildItem $FilePath).Extension)
+  } else {
+    Write-Error("File '$FilePath' has invalid file extension.`n" + `
+                "Allowed extensions are: $($ALLOWED_ASSET_EXTENSIONS.keys)")
+    exit 1
   }
+}
+
+<#
+.SYNOPSIS
+  Validate the given file's against the allowed file extensions defined at the
+  top of this file.
+#>
+function Test-FileExtension() {
+  param( [string[]]$FilePath )
+
+  $extension = (Get-ChildItem $FilePath).Extension
+  return $ALLOWED_ASSET_EXTENSIONS.ContainsKey("$extension")
 }
 
 <#

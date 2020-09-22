@@ -30,7 +30,8 @@ param(
 <# Import:
   New-GitHubRelease
   Publish-ReleaseAsset
-  Get-ApplicationType #>
+  Get-ApplicationType
+  Test-FileExtension #>
 . $PSScriptRoot\Helpers.ps1
 
 if ($AssetPaths.Length -eq 0) {
@@ -42,6 +43,12 @@ foreach ($AssetPath in $AssetPaths) {
   if (!(Test-Path $AssetPath)) {
     Write-Error("Cannot upload asset. File '$AssetPath' does not exist.`n" +
                 "Release not created.")
+    exit 1
+  }
+
+  if (!(Test-FileExtension $AssetPath)) {
+    Write-Error("File '$AssetPath' has invalid file extension.`n" + `
+                "Allowed extensions are: $($ALLOWED_ASSET_EXTENSIONS.keys)")
     exit 1
   }
 }
@@ -58,7 +65,6 @@ $tag_opts = @{
   "TagName" = "$ReleaseName"
 }
 
-Write-Output "Creating release $ReleaseName on $GitSHA in $RepoOwner/$RepoName..."
 $result = New-GitHubRelease @tag_opts
 
 foreach ($AssetPath in $AssetPaths) {
@@ -73,8 +79,7 @@ foreach ($AssetPath in $AssetPaths) {
     "RepoOwner" = "$RepoOwner"
   }
 
-  Write-Output "Uploading asset $AssetPath..."
-  Publish-ReleaseAsset @asset_opts | Out-Null
+  Publish-ReleaseAsset @asset_opts
 }
 
 Write-Output "Release $ReleaseName created succesfully.`n"
