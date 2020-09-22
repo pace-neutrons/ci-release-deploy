@@ -4,9 +4,11 @@ def repo_owner = "pace-neutrons"
 def release_id_description = (
   "The IDs of the jobs that contain the target release artifacts.\n" +
   "This parameter should have the form:\n\n" +
-  "  <JOB_NAME> <BUILD_NUMBER>\n" +
-  "  <JOB_NAME> <BUILD_NUMBER>\n" +
-  "  ...")
+  "  <JOB_NAME>, <BUILD_NUMBER>;\n" +
+  "  <JOB_NAME>, <BUILD_NUMBER>;\n" +
+  "           ...\n" +
+  "With a comma separating job name and build number and a semi-colon " +
+  "separating entries, whitespace is ignored.")
 
 def get_agent() {
   def agent_label = ''
@@ -75,21 +77,23 @@ pipeline {
     stage('Get-Artifacts') {
       steps {
         script {
-          List lines = env.release_job_ids.split('\n')
+          List lines = env.release_job_ids.split(';')
           for (String line : lines) {
-            List build = line.split(' ')
-            String project_name = build[0]
-            String build_num = build[1]
+            if (line.strip()) {
+              List build = line.split(',')
+              String project_name = build[0].strip()
+              String build_num = build[1].strip()
 
-            echo "Copying artifact from build #${build_num} of ${project_name}"
-            copyArtifacts(
-              filter: "**/${repo_name}-*",
-              fingerprintArtifacts: true,
-              flatten: true,
-              projectName: "${project_name}",
-              selector: specific("${build_num}"),
-              target: '.'
-            )
+              echo "Copying artifact from build #${build_num} of ${project_name}"
+              copyArtifacts(
+                filter: "**/${repo_name}-*",
+                fingerprintArtifacts: true,
+                flatten: true,
+                projectName: "${project_name}",
+                selector: specific("${build_num}"),
+                target: '.'
+              )
+            }
           }
         }
       }
