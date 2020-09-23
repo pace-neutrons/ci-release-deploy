@@ -20,10 +20,10 @@ if ($sha_files.Length -eq 0) {
   Throw "No files found matching filter '$FileFilter'."
 }
 
+$err_encountered = $false
 foreach ($sha_file in $sha_files) {
   $sha = (Get-Content $sha_file).trim()
 
-  $err_encountered = $false
   if ($sha -ne $RequiredSHA) {
     $err_encountered = $true
     Write-Error("SHA '$sha' in file $sha_file does not match required SHA " +
