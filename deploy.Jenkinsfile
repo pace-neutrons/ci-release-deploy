@@ -86,7 +86,7 @@ pipeline {
 
               echo "Copying artifact from build #${build_num} of ${project_name}"
               copyArtifacts(
-                filter: "**/${repo_name}-*",
+                filter: "**/${repo_name}-*,*git-revision*",
                 fingerprintArtifacts: true,
                 flatten: true,
                 projectName: "${project_name}",
@@ -96,6 +96,16 @@ pipeline {
             }
           }
         }
+      }
+    }
+
+    stage('Validate-Packages') {
+      steps {
+        powershell """
+          ./pwsh/Test-GitShaFiles `
+              -RequiredSHA ${tag_sha} `
+              -FileFilter \"*git-revision*\"
+        """
       }
     }
 
