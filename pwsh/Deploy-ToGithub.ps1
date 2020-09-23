@@ -35,21 +35,18 @@ param(
 . $PSScriptRoot\Helpers.ps1
 
 if ($AssetPaths.Length -eq 0) {
-  Write-Error("No paths passed to AssetPaths parameter.")
-  exit 1
+  Throw("No paths passed to AssetPaths parameter.")
 }
 
 foreach ($AssetPath in $AssetPaths) {
   if (!(Test-Path $AssetPath)) {
-    Write-Error("Cannot upload asset. File '$AssetPath' does not exist.`n" +
-                "Release not created.")
-    exit 1
+    Throw("Cannot upload asset. File '$AssetPath' does not exist.`n" +
+          "Release not created.")
   }
 
   if (!(Test-FileExtension $AssetPath)) {
-    Write-Error("File '$AssetPath' has invalid file extension.`n" + `
-                "Allowed extensions are: $($ALLOWED_ASSET_EXTENSIONS.keys)")
-    exit 1
+    Throw("File '$AssetPath' has invalid file extension.`n" + `
+          "Allowed extensions are: $($ALLOWED_ASSET_EXTENSIONS.keys)")
   }
 }
 

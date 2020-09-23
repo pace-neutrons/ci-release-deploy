@@ -109,9 +109,8 @@ function Get-ApplicationType() {
   if (Test-FileExtension $FilePath) {
     return $ALLOWED_ASSET_EXTENSIONS.((Get-ChildItem $FilePath).Extension)
   } else {
-    Write-Error("File '$FilePath' has invalid file extension.`n" + `
-                "Allowed extensions are: $($ALLOWED_ASSET_EXTENSIONS.keys)")
-    exit 1
+    Throw("File '$FilePath' has invalid file extension.`n" + `
+          "Allowed extensions are: $($ALLOWED_ASSET_EXTENSIONS.keys)")
   }
 }
 
@@ -138,16 +137,14 @@ function Test-VersionNumbers() {
   foreach ($release in $ReleaseFileName) {
     $match = $ReleaseFireleaseleName -Match "-([0-9]+\.[0-9]+\.[0-9]+)-"
     if (!$match) {
-      Write-Error "Could not locate version string in release name: $release."
-      exit 1
+      Throw "Could not locate version string in release name: $release."
     }
 
     $found_version = $Matches.1
     if ($found_version -ne $VersionNumber) {
-      Write-Error("Given version number does not match found version " +
-                  "number.`nFound '$found_version' in $ReleaseFileName, " +
-                  "required version is '$VersionNumber'.")
-      exit 1
+      Throw("Given version number does not match found version number.`n" +
+            "Found '$found_version' in $ReleaseFileName, required version " +
+            "is '$VersionNumber'.")
     }
   }
 }
