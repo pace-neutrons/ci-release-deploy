@@ -102,9 +102,14 @@ pipeline {
     stage('Validate-Packages') {
       steps {
         powershell """
-          ./pwsh/Test-GitShaFiles `
-              -RequiredSHA ${tag_sha} `
+          ./pwsh/Test-GitShaFiles \
+              -RequiredSHA ${tag_sha} \
               -FileFilter \"*git-revision*\"
+
+          \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
+          ./pwsh/Test-VersionNumbers \
+              -VersionNumber ${version_number} \
+              -ReleaseFileNames \$artifacts
         """
       }
     }
@@ -114,13 +119,7 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell """
-            . ./pwsh/Helpers.ps1
-
             \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
-
-            Test-VersionNumbers \
-                -VersionNumber ${version_number} \
-                -ReleaseFileNames \$artifacts
 
             ./pwsh/Deploy-ToGitHub \
                 -AssetPaths \$artifacts \

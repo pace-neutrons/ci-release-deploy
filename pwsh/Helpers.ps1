@@ -126,25 +126,3 @@ function Test-FileExtension() {
   return $ALLOWED_ASSET_EXTENSIONS.ContainsKey("$extension")
 }
 
-<#
-.SYNOPSIS
-  Function to test whether the given release file names are releases that
-  correspond to the given version number.
-#>
-function Test-VersionNumbers() {
-  param( [string]$VersionNumber, [string[]]$ReleaseFileNames )
-
-  foreach ($release in $ReleaseFileName) {
-    $match = $ReleaseFireleaseleName -Match "-([0-9]+\.[0-9]+\.[0-9]+)-"
-    if (!$match) {
-      Throw "Could not locate version string in release name: $release."
-    }
-
-    $found_version = $Matches.1
-    if ($found_version -ne $VersionNumber) {
-      Throw("Given version number does not match found version number.`n" +
-            "Found '$found_version' in $ReleaseFileName, required version " +
-            "is '$VersionNumber'.")
-    }
-  }
-}
