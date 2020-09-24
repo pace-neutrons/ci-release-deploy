@@ -79,10 +79,10 @@ pipeline {
         script {
           List lines = env.release_job_ids.split(';')
           for (String line : lines) {
-            if (line.strip()) {
+            if (line.trim()) {
               List build = line.split(',')
-              String project_name = build[0].strip()
-              String build_num = build[1].strip()
+              String project_name = build[0].trim()
+              String build_num = build[1].trim()
 
               echo "Copying artifact from build #${build_num} of ${project_name}"
               copyArtifacts(
