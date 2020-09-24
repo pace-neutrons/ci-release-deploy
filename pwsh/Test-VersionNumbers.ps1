@@ -27,5 +27,7 @@ foreach ($release in $ReleaseFileName) {
     Throw("Given version number does not match found version number.`n" +
           "Found '$found_version' in $ReleaseFileName, required version " +
           "is '$VersionNumber'.")
+  } else {
+    Write-Output "Found version matching '$VersionNumber' in $ReleaseFileName."
   }
 }
