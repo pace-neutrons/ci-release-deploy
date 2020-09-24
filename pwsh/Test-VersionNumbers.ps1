@@ -25,7 +25,7 @@ foreach ($release in $ReleaseFileNames) {
   $found_version = $Matches.1
   if ($found_version -ne $VersionNumber) {
     Throw("Given version number does not match found version number.`n" +
-          "Found '$found_version' in $ReleaseFileNames, required version " +
+          "Found '$found_version' in $release, required version " +
           "is '$VersionNumber'.")
   } else {
     Write-Output "Found version matching '$VersionNumber' in $release."
