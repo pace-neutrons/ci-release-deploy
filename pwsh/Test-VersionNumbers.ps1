@@ -16,8 +16,8 @@ param(
 
 $VERSION_NUMBER_REGEX = "-([0-9]+\.[0-9]+\.[0-9]+)-"
 
-foreach ($release in $ReleaseFileName) {
-  $match = $ReleaseFireleaseleName -Match $VERSION_NUMBER_REGEX
+foreach ($release in $ReleaseFileNames) {
+  $match = $release -Match $VERSION_NUMBER_REGEX
   if (!$match) {
     Throw "Could not locate version string in release name: $release."
   }
@@ -25,9 +25,9 @@ foreach ($release in $ReleaseFileName) {
   $found_version = $Matches.1
   if ($found_version -ne $VersionNumber) {
     Throw("Given version number does not match found version number.`n" +
-          "Found '$found_version' in $ReleaseFileName, required version " +
+          "Found '$found_version' in $ReleaseFileNames, required version " +
           "is '$VersionNumber'.")
   } else {
-    Write-Output "Found version matching '$VersionNumber' in $ReleaseFileName."
+    Write-Output "Found version matching '$VersionNumber' in $release."
   }
 }
