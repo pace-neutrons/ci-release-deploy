@@ -28,6 +28,8 @@ foreach ($sha_file in $sha_files) {
     $err_encountered = $true
     Write-Error("SHA '$sha' in file $sha_file does not match required SHA " +
                 "'$RequiredSHA'`n")
+  } else {
+    Write-Output "Found matching SHA in file: $sha_file"
   }
 }
 
