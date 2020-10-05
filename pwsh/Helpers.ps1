@@ -1,3 +1,8 @@
+<# Helpers.ps1
+  This file provides helper functions for the "public-API" functions defined in
+  the files in this file's directory.
+#>
+
 $ALLOWED_ASSET_EXTENSIONS = @{
   ".zip" = "zip"
   ".gz" = "gzip"
