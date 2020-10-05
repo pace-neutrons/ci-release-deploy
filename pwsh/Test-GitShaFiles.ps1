@@ -11,8 +11,8 @@
 param (
   # The required Git SHA to match to the discovered files
   [string]$RequiredSHA=$(throw "Mandatory argument 'RequiredSHA' not specified."),
-  # The filter to use to discover SHA files (this is passed to Get-ChildItem)
-  [string]$Filefilter=$(throw "Mandatory argument 'FileFilter' not specified.")
+  # A file-name filter to discover files containing a Git SHA (this is passed to Get-ChildItem)
+  [string]$FileFilter=$(throw "Mandatory argument 'FileFilter' not specified.")
 )
 
 $sha_files = (Get-ChildItem -Filter "$FileFilter").Name
