@@ -100,10 +100,10 @@ function Publish-ReleaseAsset() {
 
 <#
 .SYNOPSIS
-  Function to deduce the application type of the given file. Only .zip and .gz
-  files are currently supported.
+  Function to deduce the MIME application type of the given file. Only .zip and
+  .gz files are currently supported.
 #>
-function Get-ApplicationType() {
+function Get-MimeApplicationType() {
   param( [string]$FilePath )
 
   if (Test-FileExtension $FilePath) {

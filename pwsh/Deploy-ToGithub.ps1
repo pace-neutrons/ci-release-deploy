@@ -30,7 +30,7 @@ param(
 <# Import:
   New-GitHubRelease
   Publish-ReleaseAsset
-  Get-ApplicationType
+  Get-MimeApplicationType
   Test-FileExtension #>
 . $PSScriptRoot\Helpers.ps1
 
@@ -69,7 +69,7 @@ foreach ($AssetPath in $AssetPaths) {
   $asset_opts = @{
     "AssetName" = (Get-ChildItem $AssetPath).Name
     "AssetPath" = "$AssetPath"
-    "AssetType" = (Get-ApplicationType -FilePath $AssetPath)
+    "AssetType" = (Get-MimeApplicationType -FilePath $AssetPath)
     "AuthToken" = "$AuthToken"
     "ReleaseID" = $result.id
     "RepoName" = "$RepoName"
