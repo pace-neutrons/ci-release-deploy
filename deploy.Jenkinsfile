@@ -135,6 +135,34 @@ pipeline {
         }
       }
     }
+
+    stage('Push-Docs') {
+      // Assuming windows
+      steps {
+        copyArtifacts(
+          filter: "**/${repo_name}-*docs.zip",
+          fingerprintArtifacts: true,
+          flatten: true,
+          projectName: "${project_name}",
+          selector: specific("${build_num}"),
+          target: '.'
+        )
+        withCredentials([string(credentialsId: 'GitHub_API_Token',
+                                variable: 'api_token')]) {
+          powershell '''
+            git checkout gh-pages
+            git rm -rf --ignore-unmatch ./${version_number}
+            Expand-Archive -Path ./docs.zip -DestinationPath ./${version_number}
+            git add ./${version_number}
+            Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=\'https://pace-neutrons.github.io/Horace/${version_number}/\'" />'
+            git add ./stable/index.html
+            git commit -m 'Docs update for release ${version_number}'
+            git push
+          '''
+
+        }
+      }
+    }
   }
 
   post {
