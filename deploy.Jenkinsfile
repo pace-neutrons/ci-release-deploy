@@ -4,8 +4,8 @@ def repo_owner = "pace-neutrons"
 def release_id_description = (
   "The IDs of the jobs that contain the target release artifacts.\n" +
   "This parameter should have the form:\n\n" +
-  "  <JOB_NAME>, <BUILD_NUMBER>;\n" +
-  "  <JOB_NAME>, <BUILD_NUMBER>;\n" +
+  "  <PIPELINE_NAME>, <BUILD_NUMBER>;\n" +
+  "  <PIPELINE_NAME>, <BUILD_NUMBER>;\n" +
   "           ...\n" +
   "With a comma separating job name and build number and a semi-colon " +
   "separating entries, whitespace is ignored.")
@@ -86,7 +86,7 @@ pipeline {
 
               echo "Copying artifact from build #${build_num} of ${project_name}"
               copyArtifacts(
-                filter: "**/${repo_name}-*,*git-revision*",
+                filter: "**/${repo_name}-*,*git-revision*,docs.*",
                 fingerprintArtifacts: true,
                 flatten: true,
                 projectName: "${project_name}",
@@ -139,20 +139,14 @@ pipeline {
     stage('Push-Docs') {
       // Assuming windows
       steps {
-        copyArtifacts(
-          filter: "**/${repo_name}-*docs.zip",
-          fingerprintArtifacts: true,
-          flatten: true,
-          projectName: "${project_name}",
-          selector: specific("${build_num}"),
-          target: '.'
-        )
+
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell '''
-            git checkout gh-pages
+            git clone git@github.com:pace-neutrons/Horace.git --branch gh-pages --single-branch docs
+            cd docs
             git rm -rf --ignore-unmatch ./${version_number}
-            Expand-Archive -Path ./docs.zip -DestinationPath ./${version_number}
+            Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
             git add ./${version_number}
             Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=\'https://pace-neutrons.github.io/Horace/${version_number}/\'" />'
             git add ./stable/index.html
