@@ -143,7 +143,7 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell '''
-            git clone git@github.com:pace-neutrons/Horace.git --branch gh-pages --single-branch docs
+            git clone https://pace-builder:"\${api_token## }"@github.com/pace-neutrons/Horace.git --branch gh-pages --single-branch docs
             cd docs
             git rm -rf --ignore-unmatch ./${version_number}
             Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
