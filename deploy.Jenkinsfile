@@ -123,7 +123,7 @@ pipeline {
 
     //         ./pwsh/Deploy-ToGitHub \
     //             -AssetPaths \$artifacts \
-    //             -AuthToken ${api_token} \
+    //             -AuthToken \${env:api_token} \
     //             -GitSHA ${tag_sha} \
     //             -ReleaseBody "${release_body}" \
     //             -ReleaseName "v${version_number}" \
@@ -143,6 +143,7 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell '''
+            Write-Host "${version_number} vs \${version_number}"
             if (${version_number}) {
               git config --local user.name "PACE CI Build Agent"
               git config --local user.email "pace.builder.stfc@gmail.com"
