@@ -143,7 +143,7 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell '''
-            Write-Host "${version_number} vs \${version_number}"
+            Write-Host "${version_number} vs \${version_number} vs ${env:version_number} vs \${env:version_number}"
             if (${version_number}) {
               git config --local user.name "PACE CI Build Agent"
               git config --local user.email "pace.builder.stfc@gmail.com"
