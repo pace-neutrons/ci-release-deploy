@@ -145,11 +145,16 @@ pipeline {
           powershell '''
             git config --local user.name "PACE CI Build Agent"
             git config --local user.email "pace.builder.stfc@gmail.com"
-            git clone https://pace-builder:"\${api_token## }"@github.com/pace-neutrons/Horace.git --branch gh-pages --single-branch docs
+            $token = "${env:api_token}".trim()
+            git clone "https://pace-builder:${token}@github.com/pace-neutrons/Horace.git" --branch gh-pages --single-branch docs
             cd docs
             git remote set-url --push origin "https://pace-builder:"\${api_token## }"@github.com/pace-neutrons/Horace"
             git rm -rf --ignore-unmatch ./${version_number}
-            Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
+
+            New-Item -Path ./${version_number} -ItemType Directory
+            # Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
+            tar -xzvf docs.tar.gz --directory ./${version_number}
+
             git add ./${version_number}
             Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=\'https://pace-neutrons.github.io/Horace/${version_number}/\'" />'
             git add ./stable/index.html
