@@ -142,15 +142,14 @@ pipeline {
 
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
-          powershell '''
-            Write-Host "${version_number} vs \${version_number} vs ${env:version_number} vs \${env:version_number}"
+          powershell """
             if (${version_number}) {
               git config --local user.name "PACE CI Build Agent"
               git config --local user.email "pace.builder.stfc@gmail.com"
               $token = "${env:api_token}".trim()
               git clone "https://github.com/pace-neutrons/Horace.git" --branch gh-pages --single-branch docs
               cd docs
-              git remote set-url --push origin "https://pace-builder:$(${env:api_token}.trim())@github.com/pace-neutrons/Horace"
+              git remote set-url --push origin "https://pace-builder:\$(\${env:api_token}.trim())@github.com/pace-neutrons/Horace"
 
               git rm -rf --ignore-unmatch ./${version_number}
 
@@ -164,7 +163,7 @@ pipeline {
               git commit -m 'Docs update for release ${version_number}'
               git push
             }
-          '''
+          """
 
         }
       }
