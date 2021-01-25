@@ -83,10 +83,10 @@ pipeline {
               List build = line.split(',')
               String project_name = build[0].trim()
               String build_num = build[1].trim()
-
+// **/${repo_name}-*,*git-revision*,
               echo "Copying artifact from build #${build_num} of ${project_name}"
               copyArtifacts(
-                filter: "**/${repo_name}-*,*git-revision*,docs.*",
+                filter: "docs.*",
                 fingerprintArtifacts: true,
                 flatten: true,
                 projectName: "${project_name}",
@@ -99,42 +99,42 @@ pipeline {
       }
     }
 
-    stage('Validate-Packages') {
-      steps {
-        powershell """
-          ./pwsh/Test-GitShaFiles \
-              -RequiredSHA ${tag_sha} \
-              -FileFilter \"*git-revision*\"
+    // stage('Validate-Packages') {
+    //   steps {
+    //     powershell """
+    //       ./pwsh/Test-GitShaFiles \
+    //           -RequiredSHA ${tag_sha} \
+    //           -FileFilter \"*git-revision*\"
 
-          \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
-          ./pwsh/Test-VersionNumbers \
-              -VersionNumber ${version_number} \
-              -ReleaseFileNames \$artifacts
-        """
-      }
-    }
+    //       \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
+    //       ./pwsh/Test-VersionNumbers \
+    //           -VersionNumber ${version_number} \
+    //           -ReleaseFileNames \$artifacts
+    //     """
+    //   }
+    // }
 
-    stage('Push-Release') {
-      steps {
-        withCredentials([string(credentialsId: 'GitHub_API_Token',
-                                variable: 'api_token')]) {
-          powershell """
-            \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
+    // stage('Push-Release') {
+    //   steps {
+    //     withCredentials([string(credentialsId: 'GitHub_API_Token',
+    //                             variable: 'api_token')]) {
+    //       powershell """
+    //         \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
 
-            ./pwsh/Deploy-ToGitHub \
-                -AssetPaths \$artifacts \
-                -AuthToken ${api_token} \
-                -GitSHA ${tag_sha} \
-                -ReleaseBody "${release_body}" \
-                -ReleaseName "v${version_number}" \
-                -RepoName ${repo_name} \
-                -RepoOwner ${repo_owner} \
-                -Draft \$${is_draft} \
-                -PreRelease \$${is_prerelease}
-          """
-        }
-      }
-    }
+    //         ./pwsh/Deploy-ToGitHub \
+    //             -AssetPaths \$artifacts \
+    //             -AuthToken ${api_token} \
+    //             -GitSHA ${tag_sha} \
+    //             -ReleaseBody "${release_body}" \
+    //             -ReleaseName "v${version_number}" \
+    //             -RepoName ${repo_name} \
+    //             -RepoOwner ${repo_owner} \
+    //             -Draft \$${is_draft} \
+    //             -PreRelease \$${is_prerelease}
+    //       """
+    //     }
+    //   }
+    // }
 
     stage('Push-Docs') {
       // Assuming windows
