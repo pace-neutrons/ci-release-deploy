@@ -143,6 +143,8 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell '''
+            git config --local user.name "PACE CI Build Agent"
+            git config --local user.email "pace.builder.stfc@gmail.com"
             git clone https://pace-builder:"\${api_token## }"@github.com/pace-neutrons/Horace.git --branch gh-pages --single-branch docs
             cd docs
             git remote set-url --push origin "https://pace-builder:"\${api_token## }"@github.com/pace-neutrons/Horace"
