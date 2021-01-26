@@ -147,7 +147,7 @@ pipeline {
             git config --local user.email "pace.builder.stfc@gmail.com"
             git clone "https://github.com/pace-neutrons/Horace.git" --branch gh-pages --single-branch docs
             cd docs
-            git remote set-url --push origin "https://pace-builder:\${env:api_token}@github.com/pace-neutrons/Horace"
+            git remote set-url --push origin "https://pace-builder:\$(\${env:api_token}.trim())@github.com/pace-neutrons/Horace"
 
             git rm -rf --ignore-unmatch ./${version_number}
 
