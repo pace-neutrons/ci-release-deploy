@@ -155,10 +155,10 @@ pipeline {
             Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
 
             git add ./${version_number}
+            Write-Host '<meta http-equiv="Refresh" content="0; url=''https://pace-neutrons.github.io/Horace/${version_number}/''" />'
             Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=''https://pace-neutrons.github.io/Horace/${version_number}/''" />'
             git add ./stable/index.html
             git commit -m 'Docs update for release ${version_number}'
-            Write-Host "I'm going to push now. Going to do it."
             git push
           """
 
