@@ -158,9 +158,7 @@ pipeline {
             Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=''https://pace-neutrons.github.io/Horace/${version_number}/''" />'
             git add ./stable/index.html
             git commit -m 'Docs update for release ${version_number}'
-            if (${version_number}) {
-              git push
-            }
+            git push
           """
 
         }
