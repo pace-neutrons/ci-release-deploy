@@ -152,11 +152,10 @@ pipeline {
             git rm -rf --ignore-unmatch ./${version_number}
 
             New-Item -Path ./${version_number} -ItemType Directory
-            # Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
-            tar -xzvf docs.tar.gz --directory ./${version_number}
+            Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
 
             git add ./${version_number}
-            Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=\'https://pace-neutrons.github.io/Horace/${version_number}/\'" />'
+            Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=''https://pace-neutrons.github.io/Horace/${version_number}/''" />'
             git add ./stable/index.html
             git commit -m 'Docs update for release ${version_number}'
             if (${version_number}) {
