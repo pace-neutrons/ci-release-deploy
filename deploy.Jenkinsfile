@@ -75,9 +75,6 @@ pipeline {
 
   stages {
     stage('Get-Artifacts') {
-      when {
-        not {tag 'Update-Stable'}
-      }
       steps {
         script {
           List lines = env.release_job_ids.split(';')
@@ -102,9 +99,6 @@ pipeline {
     }
 
     stage('Validate-Packages') {
-      when {
-        not {tag 'Update-Stable'}
-      }
       steps {
         powershell """
           ./pwsh/Test-GitShaFiles \
@@ -120,9 +114,6 @@ pipeline {
     }
 
     stage('Push-Release') {
-      when {
-        not {tag 'Update-Stable'}
-      }
       steps {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
@@ -145,9 +136,6 @@ pipeline {
     }
 
     stage('Push-Docs') {
-      when {
-        not {tag 'Update-Stable'}
-      }
       // Assuming windows
       steps {
 
@@ -174,31 +162,6 @@ pipeline {
       }
     }
 
-    stage ('Update-Stable') {
-      when {
-        tag 'Update-Stable'
-      }
-      // Assuming windows
-      steps {
-
-        withCredentials([string(credentialsId: 'GitHub_API_Token',
-                                variable: 'api_token')]) {
-          powershell """
-            git config --local user.name "PACE CI Build Agent"
-            git config --local user.email "pace.builder.stfc@gmail.com"
-            git clone "https://github.com/pace-neutrons/Horace.git" --branch gh-pages --single-branch docs
-            cd docs
-            git remote set-url --push origin "https://pace-builder:\$(\${env:api_token}.trim())@github.com/pace-neutrons/Horace"
-
-            Write-Host '<meta http-equiv="Refresh" content="0; url=''https://pace-neutrons.github.io/Horace/${version_number}/''" />'
-            Set-Content -Path ./stable/index.html -Value '<meta http-equiv="Refresh" content="0; url=''https://pace-neutrons.github.io/Horace/${version_number}/''" />'
-            git add ./stable/index.html
-            git commit -m 'Stable update for release ${version_number}'
-            git push
-          """
-        }
-      }
-    }
   }
 
   post {
