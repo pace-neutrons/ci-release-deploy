@@ -4,8 +4,8 @@ def repo_owner = "pace-neutrons"
 def release_id_description = (
   "The IDs of the jobs that contain the target release artifacts.\n" +
   "This parameter should have the form:\n\n" +
-  "  <PIPELINE_NAME>, <BUILD_NUMBER>;\n" +
-  "  <PIPELINE_NAME>, <BUILD_NUMBER>;\n" +
+  "  PIPELINE_NAME, BUILD_NUMBER;\n" +
+  "  PIPELINE_NAME, BUILD_NUMBER;\n" +
   "           ...\n" +
   "With a comma separating job name and build number and a semi-colon " +
   "separating entries, whitespace is ignored.")
