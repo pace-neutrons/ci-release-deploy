@@ -136,11 +136,11 @@ pipeline {
     }
 
     stage('Push-Docs') {
-      // Assuming windows
       steps {
 
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
+          // Creates version's docs folder on gh-pages
           powershell """
             ./pwsh/Docs -Action "push" \
                         -ReleaseName "${version_number}" \

@@ -1,3 +1,5 @@
+#!groovy
+
 def get_agent() {
   def agent_label = ''
   withCredentials([string(credentialsId: 'win10_agent', variable: 'agent')]) {
@@ -23,25 +25,24 @@ pipeline {
   stages {
 
     stage ('Update-Stable') {
-      // Assuming windows
-      steps {
+      withCredentials([string(credentialsId: 'GitHub_API_Token',
+                              variable: 'api_token')]) {
 
-        withCredentials([string(credentialsId: 'GitHub_API_Token',
-                                variable: 'api_token')]) {
-          powershell """
-            ./pwsh/Docs -Action "update-stable" \
-                        -ReleaseName ${version_number} \
-                        -AuthToken \${env:api_token}
-          """
-        }
+        // Update stable to be new version
+        powershell """
+          ./pwsh/Docs -Action "update-stable" \
+                      -ReleaseName ${version_number} \
+                      -AuthToken \${env:api_token}
+        """
       }
     }
   }
+}
 
-  post {
-    cleanup {
-      deleteDir()
-    }
+post {
+  cleanup {
+    deleteDir()
   }
+}
 
 }
