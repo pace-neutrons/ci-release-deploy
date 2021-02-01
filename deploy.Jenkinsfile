@@ -142,21 +142,10 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           powershell """
-            git config --local user.name "PACE CI Build Agent"
-            git config --local user.email "pace.builder.stfc@gmail.com"
-            git clone "https://github.com/pace-neutrons/Horace.git" --branch gh-pages --single-branch docs
-            cd docs
-            git remote set-url --push origin "https://pace-builder:\$(\${env:api_token}.trim())@github.com/pace-neutrons/Horace"
-
-            git rm -rf --ignore-unmatch ./${version_number}
-
-            New-Item -Path ./${version_number} -ItemType Directory
-            Expand-Archive -Path ../docs.zip -DestinationPath ./${version_number}
-
-            git add ./${version_number}
-            git commit -m 'Docs update for release ${version_number}'
-            git push
-          """
+            ./pwsh/Docs -Action "push" \
+                        -ReleaseName "${version_number}" \
+                        -AuthToken \${env:api_token}
+            """
 
         }
       }
