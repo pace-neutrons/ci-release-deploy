@@ -23,9 +23,6 @@ pipeline {
   stages {
 
     stage ('Update-Stable') {
-      when {
-        expression{env.update_stable.toBoolean()}
-      }
       // Assuming windows
       steps {
 
