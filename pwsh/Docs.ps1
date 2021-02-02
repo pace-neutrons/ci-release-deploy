@@ -13,7 +13,7 @@ param (
   # The desired name for the tag and release
   [string]$ReleaseName,
   # The token to provide authentication to GitHub
-  [string]$AuthToken,
+  [string]$AuthToken
 )
 
 # Pull latest gh-pages and set up for pushing
