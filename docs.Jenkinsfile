@@ -25,15 +25,17 @@ pipeline {
   stages {
 
     stage ('Update-Stable') {
-      withCredentials([string(credentialsId: 'GitHub_API_Token',
-                              variable: 'api_token')]) {
+      steps {
+        withCredentials([string(credentialsId: 'GitHub_API_Token',
+                                variable: 'api_token')]) {
 
-        // Update stable to be new version
-        powershell """
-          ./pwsh/Docs -Action "update-stable" \
-                      -ReleaseName ${version_number} \
-                      -AuthToken \${env:api_token}
-        """
+          // Update stable to be new version
+          powershell """
+            ./pwsh/Docs -Action "update-stable" \
+                        -ReleaseName ${version_number} \
+                        -AuthToken \${env:api_token}
+          """
+        }
       }
     }
   }
