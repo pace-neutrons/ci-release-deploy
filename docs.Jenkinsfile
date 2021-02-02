@@ -37,12 +37,11 @@ pipeline {
       }
     }
   }
-}
 
-post {
-  cleanup {
-    deleteDir()
+  post {
+    cleanup {
+      deleteDir()
+    }
   }
-}
 
 }
