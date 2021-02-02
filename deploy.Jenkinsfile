@@ -4,8 +4,8 @@ def repo_owner = "pace-neutrons"
 def release_id_description = (
   "The IDs of the jobs that contain the target release artifacts.\n" +
   "This parameter should have the form:\n\n" +
-  "  <JOB_NAME>, <BUILD_NUMBER>;\n" +
-  "  <JOB_NAME>, <BUILD_NUMBER>;\n" +
+  "  PIPELINE_NAME, BUILD_NUMBER;\n" +
+  "  PIPELINE_NAME, BUILD_NUMBER;\n" +
   "           ...\n" +
   "With a comma separating job name and build number and a semi-colon " +
   "separating entries, whitespace is ignored.")
@@ -83,10 +83,9 @@ pipeline {
               List build = line.split(',')
               String project_name = build[0].trim()
               String build_num = build[1].trim()
-
               echo "Copying artifact from build #${build_num} of ${project_name}"
               copyArtifacts(
-                filter: "**/${repo_name}-*,*git-revision*",
+                filter: "**/${repo_name}-*,*git-revision*,docs.*",
                 fingerprintArtifacts: true,
                 flatten: true,
                 projectName: "${project_name}",
@@ -123,7 +122,7 @@ pipeline {
 
             ./pwsh/Deploy-ToGitHub \
                 -AssetPaths \$artifacts \
-                -AuthToken ${api_token} \
+                -AuthToken \${env:api_token} \
                 -GitSHA ${tag_sha} \
                 -ReleaseBody "${release_body}" \
                 -ReleaseName "v${version_number}" \
@@ -135,6 +134,23 @@ pipeline {
         }
       }
     }
+
+    stage('Push-Docs') {
+      steps {
+
+        withCredentials([string(credentialsId: 'GitHub_API_Token',
+                                variable: 'api_token')]) {
+          // Creates version's docs folder on gh-pages
+          powershell """
+            ./pwsh/Docs -Action "push" \
+                        -ReleaseName "${version_number}" \
+                        -AuthToken \${env:api_token}
+            """
+
+        }
+      }
+    }
+
   }
 
   post {
