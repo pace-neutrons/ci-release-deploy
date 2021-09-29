@@ -3,12 +3,12 @@
 def repo_owner = "pace-neutrons"
 def release_id_description = (
   "The IDs of the jobs that contain the target release artifacts.\n" +
-  "This parameter should have the form:\n\n" +
-  "  PIPELINE_NAME, BUILD_NUMBER;\n" +
-  "  PIPELINE_NAME, BUILD_NUMBER;\n" +
-  "           ...\n" +
-  "With a comma separating job name and build number and a semi-colon " +
-  "separating entries, whitespace is ignored.")
+    "This parameter should have the form:\n\n" +
+    "  PIPELINE_NAME, BUILD_NUMBER;\n" +
+    "  PIPELINE_NAME, BUILD_NUMBER;\n" +
+    "           ...\n" +
+    "With a comma separating job name and build number and a semi-colon " +
+    "separating entries, whitespace is ignored.")
 
 def get_agent() {
   def agent_label = ''
@@ -76,78 +76,81 @@ pipeline {
   stages {
     stage('Get-Artifacts') {
       steps {
-        script {
-          List lines = env.release_job_ids.split(';')
-          for (String line : lines) {
-            if (line.trim()) {
-              List build = line.split(',')
-              String project_name = build[0].trim()
-              String build_num = build[1].trim()
-              echo "Copying artifact from build #${build_num} of ${project_name}"
-              copyArtifacts(
-                filter: "**/${repo_name}-*,*git-revision*,docs.*",
-                fingerprintArtifacts: true,
-                flatten: true,
-                projectName: "${project_name}",
-                selector: specific("${build_num}"),
-                target: '.'
-              )
-            }
-          }
-        }
+	script {
+	  List lines = env.release_job_ids.split(';')
+	  for (String line : lines) {
+	    if (line.trim()) {
+	      List build = line.split(',')
+	      String project_name = build[0].trim()
+	      String build_num = build[1].trim()
+	      echo "Copying artifact from build #${build_num} of ${project_name}"
+	      copyArtifacts(
+		filter: "**/${repo_name}-*,*git-revision*,docs.*",
+		fingerprintArtifacts: true,
+		flatten: true,
+		projectName: "${project_name}",
+		selector: specific("${build_num}"),
+		target: '.'
+	      )
+	    }
+	  }
+	}
       }
     }
 
     stage('Validate-Packages') {
       steps {
-        powershell """
-          ./pwsh/Test-GitShaFiles \
-              -RequiredSHA ${tag_sha} \
-              -FileFilter \"*git-revision*\"
+	powershell """
+	  ./pwsh/Test-GitShaFiles \
+	      -RequiredSHA ${tag_sha} \
+	      -FileFilter \"*git-revision*\"
 
-          \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
-          ./pwsh/Test-VersionNumbers \
-              -VersionNumber ${version_number} \
-              -ReleaseFileNames \$artifacts
-        """
+	  \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
+	  ./pwsh/Test-VersionNumbers \
+	      -VersionNumber ${version_number} \
+	      -ReleaseFileNames \$artifacts
+	"""
       }
     }
 
     stage('Push-Release') {
       steps {
-        withCredentials([string(credentialsId: 'GitHub_API_Token',
-                                variable: 'api_token')]) {
-          powershell """
-            \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
+	withCredentials([string(credentialsId: 'GitHub_API_Token',
+				variable: 'api_token')]) {
+	  powershell """
+	    \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
 
-            ./pwsh/Deploy-ToGitHub \
-                -AssetPaths \$artifacts \
-                -AuthToken \${env:api_token} \
-                -GitSHA ${tag_sha} \
-                -ReleaseBody "${release_body}" \
-                -ReleaseName "v${version_number}" \
-                -RepoName ${repo_name} \
-                -RepoOwner ${repo_owner} \
-                -Draft \$${is_draft} \
-                -PreRelease \$${is_prerelease}
-          """
-        }
+	    ./pwsh/Deploy-ToGitHub \
+		-AssetPaths \$artifacts \
+		-AuthToken \${env:api_token} \
+		-GitSHA ${tag_sha} \
+		-ReleaseBody "${release_body}" \
+		-ReleaseName "v${version_number}" \
+		-RepoName ${repo_name} \
+		-RepoOwner ${repo_owner} \
+		-Draft \$${is_draft} \
+		-PreRelease \$${is_prerelease}
+	  """
+	}
       }
     }
 
     stage('Push-Docs') {
       steps {
 
-        withCredentials([string(credentialsId: 'GitHub_API_Token',
-                                variable: 'api_token')]) {
-          // Creates version's docs folder on gh-pages
-          powershell """
-            ./pwsh/Docs -Action "push" \
-                        -ReleaseName "${version_number}" \
-                        -AuthToken \${env:api_token}
-            """
+	withCredentials([string(credentialsId: 'GitHub_API_Token',
+				variable: 'api_token')]) {
+	  // Creates version's docs folder on gh-pages
+	  powershell """
+	    ./pwsh/Docs -Action "push" \
+			-ReleaseName "${version_number}" \
+			-AuthToken \${env:api_token}
+	    ./pwsh/Docs -Action "update-stable" \
+			-ReleaseName ${version_number} \
+			-AuthToken \${env:api_token}
+	    """
 
-        }
+	}
       }
     }
 
