@@ -120,7 +120,7 @@ pipeline {
           powershell """
             \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
             
-            echo $artifacts
+            echo \$artifacts
             
             ./pwsh/Deploy-ToGitHub \
                 -AssetPaths \$artifacts \
