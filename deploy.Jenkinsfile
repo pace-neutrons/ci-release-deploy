@@ -119,7 +119,9 @@ pipeline {
                                 variable: 'api_token')]) {
           powershell """
             \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
-
+            
+            echo $artifacts
+            
             ./pwsh/Deploy-ToGitHub \
                 -AssetPaths \$artifacts \
                 -AuthToken \${env:api_token} \
@@ -141,14 +143,14 @@ pipeline {
         withCredentials([string(credentialsId: 'GitHub_API_Token',
                                 variable: 'api_token')]) {
           // Creates version's docs folder on gh-pages
-          powershell """
-            ./pwsh/Docs -Action "push" \
-                        -ReleaseName "${version_number}" \
-                        -AuthToken \${env:api_token}
-            ./pwsh/Docs -Action "update-stable" \
-                        -ReleaseName ${version_number} \
-                        -AuthToken \${env:api_token}
-            """
+          //powershell """
+          //  ./pwsh/Docs -Action "push" \
+          //              -ReleaseName "${version_number}" \
+          //              -AuthToken \${env:api_token}
+          //  ./pwsh/Docs -Action "update-stable" \
+          //              -ReleaseName ${version_number} \
+          //              -AuthToken \${env:api_token}
+          //  """
 
         }
       }
