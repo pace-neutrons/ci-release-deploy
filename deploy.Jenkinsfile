@@ -8,7 +8,7 @@ def release_id_description = (
     "  PIPELINE_NAME, BUILD_NUMBER;\n" +
     "           ...\n" +
     "With a comma separating job name and build number and a semi-colon " +
-    "separating entries, whitespace is ignored.")
+    "separating entries, white-space is ignored.")
 
 def get_agent() {
   def agent_label = ''
@@ -119,8 +119,6 @@ pipeline {
                                 variable: 'api_token')]) {
           powershell """
             \$artifacts = (Get-ChildItem -Filter ${repo_name}-*).Name
-            
-            echo \$artifacts
             
             ./pwsh/Deploy-ToGitHub \
                 -AssetPaths \$artifacts \
